@@ -9,7 +9,13 @@ export const WrapperCardStyle = styled(Card)`
         margin: 30px 0;
         display: block;
         object-fit: contain;
-        transition:  0.3s;
+        transition: transform 0.3s, opacity 0.3s; 
+        padding-left: 6px;
+    }
+    & img:hover {
+        transform: scale(1.1); /* Phóng to ảnh lên 1.1 lần khi hover */
+        opacity: 0.8; /* Giảm độ trong suốt xuống 0.8 */
+        
     }
     position: relative;
     display: flex;
@@ -80,4 +86,9 @@ export const WrapperDiscountText = styled.span`
     font-size: 12px;
     color: rgb(255,66,78);
     font-weight: 500;
+`
+export const WrapperStyleTextSell = styled.span`
+    font-size: 15;
+    line-height: 24px;
+    color: rgb(120,120,120);
 `

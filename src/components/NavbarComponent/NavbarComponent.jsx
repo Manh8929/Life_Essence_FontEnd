@@ -28,7 +28,7 @@ const NavbarComponent = () => {
                     console.log('check', option)
                     return (
                         <div style={{display: 'flex'}}>
-                            <Rate style={{ font: '12px' }} disabled defaultValue={option} />
+                            <Rate style={{ fontSize: '12px' }} disabled defaultValue={option} />
                             <span>{`từ ${option} sao`}</span>
                         </div>
 
@@ -37,7 +37,7 @@ const NavbarComponent = () => {
             case 'price':
                 return options.map((option) => {
                     return (
-                        <div style={{padding: '4px',color: 'rgb(56, 56, 61',borderRadius: '10px', backgroundColor: '#ccc', width: 'fit-content'}}>
+                        <div style={{}}>
                                 {option}
                         </div>
 
@@ -49,7 +49,7 @@ const NavbarComponent = () => {
         }
     }
     return (
-        <div style={{backgroundColor: '#fff'}}>
+        <div>
             <WrapperLableText>Lable</WrapperLableText>
             <WrapperContent>
                 {renderContent('text', ['Mạnh đẹp trai', 'Mạnh đẹp trai', 'Mạnh đẹp trai'])}
