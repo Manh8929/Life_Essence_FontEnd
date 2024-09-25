@@ -52,7 +52,7 @@ const NavbarComponent = () => {
         <div>
             <WrapperLableText>Lable</WrapperLableText>
             <WrapperContent>
-                {renderContent('text', ['Mạnh đẹp trai', 'Mạnh đẹp trai', 'Mạnh đẹp trai'])}
+                {renderContent('text', ['Hoàng xấu', 'Hoàng xấu', 'Hoàng xấu'])}
             </WrapperContent>
             <WrapperContent>
                 {renderContent('checkbox', [
