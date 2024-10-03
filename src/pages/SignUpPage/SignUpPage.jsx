@@ -7,9 +7,9 @@ import React, { useEffect, useState } from 'react'
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom'
 import * as UserService from '../../services/UserService'
-import { UserMutationHooks } from '../../hooks/UserMutationHooks'
 import Loading from '../../components/LoadingComponent/Loading'
 import * as message from '../../components/MessageComponent/Message'
+import { useMutationHooks } from '../../hooks/userMutationHooks'
 
 const SignUpPage = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
@@ -17,6 +17,13 @@ const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const navigate = useNavigate()
+
+
+  const mutation = useMutationHooks(
+    data => UserService.signUpUser(data)
+  )
+  const {data, isPending, isSuccess, isError} = mutation
 
   const handleOnChangeEmail = (value) => {
     setEmail(value)
@@ -31,15 +38,12 @@ const SignUpPage = () => {
     mutation.mutate({email, password, confirmPassword})
   }
 
-  const navigate = useNavigate()
+
   const handleNavigateSignIn = () => {
     navigate('/sign-in')
-  }
-  const mutation = UserMutationHooks(
-    data => UserService.signUpUser(data)
-  )
+  };
+
   
-  const {data, isPending, isSuccess, isError} = mutation
   useEffect(()=>{
     if(isSuccess){
       message.success()

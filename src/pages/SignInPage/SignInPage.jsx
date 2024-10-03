@@ -7,7 +7,7 @@ import ImageLogo from '../../assets/images/logo-login.png'
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom'
 import * as UserService from '../../services/UserService'
-import { UserMutationHooks } from '../../hooks/UserMutationHooks'
+import { useMutationHooks } from '../../hooks/userMutationHooks'
 import Loading from '../../components/LoadingComponent/Loading'
 import * as message from '../../components/MessageComponent/Message'
 import { jwtDecode } from "jwt-decode";
@@ -21,18 +21,19 @@ const SignInPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const mutation = UserMutationHooks(
+  const mutation = useMutationHooks(
     data => UserService.loginUser(data)
   )
   const { data, isPending, isSuccess, isError } = mutation
 
   useEffect(() => {
     if (isSuccess) {
+      message.success()
       navigate('/')
-      localStorage.setItem('access_token', data?.access_token)
+      
       if (data?.access_token) {
+        localStorage.setItem('access_token',JSON.stringify(data?.access_token))
         const decoded = jwtDecode(data?.access_token)
-        console.log('decoded', decoded)
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token)
         }
@@ -40,14 +41,15 @@ const SignInPage = () => {
     } else if (isError) {
       message.error()
     }
-  }, [isSuccess])
+  }, [isSuccess,isError, data, navigate, message])
 
 
   const handleGetDetailsUser = async (id, token) => {
+
     const res = await UserService.getDetailsUser(id, token)
     dispatch(updateUser({...res?.data,access_token: token}))
   }
-  console.log("mutation", mutation)
+
 
 
   const handleNavigateSignUp = () => {
@@ -64,7 +66,6 @@ const SignInPage = () => {
       email,
       password
     })
-    console.log("signin", email, password)
   }
 
   return (
