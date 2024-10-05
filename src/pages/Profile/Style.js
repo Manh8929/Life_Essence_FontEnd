@@ -4,8 +4,9 @@ import styled from "styled-components";
 export const WrapperHeader = styled.h1`
     color: #000;
     font-size: 20px;
-    margin: 4px 0;
+    margin: 15px 0;
     text-align: center;
+    font-weight: 500;
 `
 export const WrapperContentProfile = styled.div`
    display: flex;
@@ -16,6 +17,7 @@ export const WrapperContentProfile = styled.div`
    padding: 30px;
    border-radius: 15px;
    gap: 30px;
+   margin-top: 20px;
 `
 export const WrapperLabel = styled.label`
    color: #000;

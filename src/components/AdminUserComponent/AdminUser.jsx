@@ -7,7 +7,7 @@ import TableComponent from '../TableComponent/TableComponent'
 const AdminUser = () => {
   return (
     <div>
-        <WrapperHeader>Quản lý Người dùng</WrapperHeader>
+        <WrapperHeader>User Management</WrapperHeader>
         <div style={{marginTop: '10px'}}>
         <Button style={{height: '120px', width: '120px', borderRadius: '6px', borderStyle: 'dashed'}}><PlusOutlined style={{fontSize: '50px'}}/></Button>
         </div>
