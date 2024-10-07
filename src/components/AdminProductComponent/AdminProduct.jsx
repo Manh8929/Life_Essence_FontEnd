@@ -88,6 +88,18 @@ const AdminProduct = () => {
             return res
         },
     )
+    const mutationDeleteMany = useMutationHooks(
+        (data) => {
+            const {
+                token,
+                ...ids } = data
+            const res = ProductService.deleteManyProduct(
+                ids,
+                token
+            )
+            return res
+        },
+    )
     const getAllProducts = async () => {
         const res = await ProductService.getAllProduct()
         return res
@@ -117,19 +129,27 @@ const AdminProduct = () => {
     }, [form, stateProductDetails])
 
     useEffect(() => {
-        if (rowSelected) {
+        if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
             fetchGetDetailsProduct(rowSelected)
         }
-    }, [rowSelected])
+    }, [rowSelected, isOpenDrawer])
 
     const handleDetailsProduct = () => {
         setIsOpenDrawer(true)
+    }
+    const handleDeleteManyProducts =(ids)=>{
+        mutationDeleteMany.mutate({ ids: ids, token: user?.access_token }, {
+            onSettled: () => {
+                queryProduct.refetch()
+            }
+        })
     }
 
     const { data, isPending, isSuccess, isError } = mutation
     const { data: dataUpdated, isPending: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
     const { data: dataDeleted, isPending: isLoadingDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted } = mutationDelete
+    const { data: dataDeletedMany, isPending: isLoadingDeletedMany, isSuccess: isSuccessDeletedMany, isError: isErrorDeletedMany } = mutationDeleteMany
 
     const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
     const { isLoading: isLoadingProducts, data: products } = queryProduct
@@ -154,60 +174,60 @@ const AdminProduct = () => {
     };
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
+          <div
+            style={{
+              padding: 8,
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <InputComponent
+              ref={searchInput}
+              placeholder={`Search ${dataIndex}`}
+              value={selectedKeys[0]}
+              onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+              onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              style={{
+                marginBottom: 8,
+                display: 'block',
+              }}
+            />
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                icon={<SearchOutlined />}
+                size="small"
                 style={{
-                    padding: 8,
+                  width: 90,
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <InputComponent
-                    ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters && handleReset(clearFilters)}
+                size="small"
+                style={{
+                  width: 90,
+                }}
+              >
+                Reset
+              </Button>
+            </Space>
+          </div>
         ),
         filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
-            />
+          <SearchOutlined
+            style={{
+              color: filtered ? '#1677ff' : undefined,
+            }}
+          />
         ),
         onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+          record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
+          if (visible) {
+            setTimeout(() => searchInput.current?.select(), 100);
+          }
         },
         // render: (text) =>
         //   searchedColumn === dataIndex ? (
@@ -223,7 +243,7 @@ const AdminProduct = () => {
         //   ) : (
         //     text
         //   ),
-    });
+      });
 
 
     const columns = [
@@ -304,6 +324,14 @@ const AdminProduct = () => {
             message.error()
         }
     }, [isSuccess, isError])
+
+    useEffect(() => {
+        if (isSuccessDeletedMany && dataDeletedMany?.status === 'OK') {
+            message.success()
+        } else if (isErrorDeletedMany) {
+            message.error()
+        }
+    }, [isSuccessDeletedMany, isErrorDeletedMany])
 
     useEffect(() => {
         if (isSuccessDeleted && dataDeleted?.status === 'OK') {
@@ -417,7 +445,7 @@ const AdminProduct = () => {
                 <Button style={{ height: '120px', width: '120px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '50px' }} /></Button>
             </div>
             <div style={{ marginTop: '20px' }}>
-                <TableComponent columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
+                <TableComponent handleDeleteMany={handleDeleteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
                     return {
                         onClick: (event) => {
                             setRowSelected(record._id)
@@ -425,7 +453,7 @@ const AdminProduct = () => {
                     };
                 }} />
             </div>
-            <ModalComponent title="Create Product" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Create Product" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isPending={isPending}>
                     <Form
                         name="basic"
@@ -583,7 +611,7 @@ const AdminProduct = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Delete Product" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+            <ModalComponent  title="Delete Product" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
                 <Loading isPending={isLoadingDeleted}>
                     <div>Are you sure to delete product</div>
                 </Loading>
