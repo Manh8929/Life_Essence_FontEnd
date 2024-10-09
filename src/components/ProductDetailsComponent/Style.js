@@ -64,12 +64,14 @@ export const WrapperQualityProduct = styled.div`
 `
 
 export const WrapperInputNumber = styled(InputNumber)`
-    &.ant-input-number.ant-input-number-sm {
-        width: 60px;
-        border-top:  none;
-        border-bottom: none;
-    }
-    .ant-input-handler-wrap {
-        display: none; /* Ẩn phần tăng/giảm */
+    &.ant-input-number-sm input {
+    height: 23px;
+    padding: 0 7px;
+    margin-left: 10px;
+    border-top:  none;
+    border-bottom: none;
+}
+    .ant-input-number-handler-wrap {
+        display: none !important; 
     }
 `

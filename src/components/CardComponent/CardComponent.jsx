@@ -1,15 +1,21 @@
 import React from 'react'
 import { StyleNameProduct, WrapperCardStyle, WrapperDiscountLogo, WrapperDiscountLogoAfter, WrapperDiscountText, WrapperPriceText, WrapperReporText, WrapperStyleTextSell } from './Style'
 import { StarFilled } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 
 const CardComponent = (props) => {
-     const {countInStock,description,image, name, price, rating, type, discount,selled} = props
+     const {countInStock,description,image, name, price, rating, type, discount,selled, id} = props
+     const navigate = useNavigate()
+     const handleDetailsProduct =(id)=>{
+         navigate(`/product-details/${id}`)
+     }
     return (
         <WrapperCardStyle
             hoverable
             headStyle={{padding: '10px'}}
             style={{ width: '303px' }}
-            cover={<img width= '200px' height= '200px' alt="example" src="https://heluva.vn/wp-content/uploads/2020/03/blackmores-glucosamine-sulfate-1500-one-a-day-1.jpg" />}
+            cover={<img width= '200px' height= '200px' alt="example" src={image} />}
+            onClick={()=> handleDetailsProduct(id)}
         >
             <WrapperDiscountLogo>sale 40%</WrapperDiscountLogo>
             <WrapperDiscountLogoAfter/>
@@ -23,8 +29,8 @@ const CardComponent = (props) => {
                 <WrapperStyleTextSell>| Đã bán {selled|| 1000} +</WrapperStyleTextSell>
             </WrapperReporText>
                 <WrapperPriceText style={{whiteSpace:'nowrap'}}>
-                    <span style={{marginRight: '6px'}}>{price} </span>
-                <WrapperDiscountText>{discount || 5} %</WrapperDiscountText>
+                    <span style={{marginRight: '6px'}}>{price?.toLocaleString()} </span>
+                <WrapperDiscountText>-{discount || 5} %</WrapperDiscountText>
                 </WrapperPriceText>
             </div>
            

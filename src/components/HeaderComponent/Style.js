@@ -16,6 +16,11 @@ export const WrapperTextHeader = styled.span`
     font-weight: bold;
     text-align: left;
 `
+export const WrapperLogoHeader = styled.img`
+    width: 150px;
+    height: 40px;
+    cursor: pointer;
+`
 
 export const WrapperHeaderAccount = styled.div`
     display: flex;
@@ -23,6 +28,7 @@ export const WrapperHeaderAccount = styled.div`
     color: #fff;
     gap:  10px;
     font-size: 12px;
+    margin-left: 40px;
 `
 export const WrapperTextHeaderSmall = styled.span`
     font-size: 12;

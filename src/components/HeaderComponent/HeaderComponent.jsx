@@ -1,6 +1,6 @@
 import { Badge, Button, Col, Popover } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { WrapperContentPopup, WrapperHeader, WrapperHeaderAccount, WrapperTextHeader, WrapperTextHeaderSmall } from './Style'
+import { WrapperContentPopup, WrapperHeader, WrapperHeaderAccount, WrapperLogoHeader, WrapperTextHeader, WrapperTextHeaderSmall } from './Style'
 import { ShoppingCartOutlined, CaretDownOutlined, UserOutlined } from '@ant-design/icons';
 import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,8 @@ import { useDispatch, useSelector , } from 'react-redux';
 import * as UserService from '../../services/UserService'
 import { resetUser } from '../../redux/slides/userSlide'
 import Loading from '../LoadingComponent/Loading';
+import { searchProduct } from '../../redux/slides/productSlide';
+import logo from '../../assets/images/logo2.png';
 
 const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
   const navigate = useNavigate()
@@ -15,9 +17,13 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
   const dispatch = useDispatch()
   const [userName, setUserName] =useState('')
   const [userAvatar, setUserAvatar] =useState('')
+  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
   const handleNavigateLogin = () => {
     navigate('/sign-in')
+  }
+  const handleLoGo = () => {
+    navigate('/')
   }
   const handleLogout =async()=>{
         setLoading(true)
@@ -41,11 +47,17 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
       )}
     </div>
   );
+
+  const onSearch =(e)=>{
+    setSearch(e.target.value)
+    dispatch(searchProduct(e.target.value))
+  }
   return (
     <div>
       <WrapperHeader style={{justifyContent: isHiddenSearch && isHiddenCart ? 'space-between' : 'unset'}} >
         <Col span={5}>
-          <WrapperTextHeader>LiFe Essence</WrapperTextHeader>
+          <WrapperLogoHeader src={logo} alt="Logo" onClick={handleLoGo}/>    
+          {/* <WrapperTextHeader>LiFe Essence</WrapperTextHeader> */}
         </Col>
         {!isHiddenSearch &&(
         <Col span={13} >
@@ -53,6 +65,8 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
             placeholder="Search products"
             textButton="Search"
             size="large"
+            bordered = {false}
+            onChange = {onSearch}
           />
         </Col>
         )}
@@ -64,8 +78,7 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
                 height: '30px',
                 width: '30px',
                 borderRadius: '50%',
-                objectFit: 'cover'
-
+                objectFit: 'cover',
             }}alt='avatar'/>
             ):(
               <UserOutlined style={{ fontSize: '30px' }} />
@@ -89,7 +102,7 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
           </WrapperHeaderAccount>
         </Loading>
         {!isHiddenCart &&(
-          <div style={{ display: 'flex', gap: '5px' }}>
+          <div onClick={()=> navigate('/order')} style={{ display: 'flex', gap: '5px', cursor: 'pointer' }}>
             <Badge count={4} size='small'>
               <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
             </Badge>
