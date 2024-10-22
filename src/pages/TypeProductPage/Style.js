@@ -4,6 +4,7 @@ import styled from "styled-components";
 export const WrapperProducts = styled.div`
     display: flex;
     margin-top: 20px;
+    margin-left: 20px;
     flex-wrap: wrap;
     gap: 12px;
 `

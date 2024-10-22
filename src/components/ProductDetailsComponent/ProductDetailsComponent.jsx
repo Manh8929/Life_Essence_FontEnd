@@ -1,19 +1,24 @@
 import { Col, Image, Rate, Row } from 'antd'
 import React, { useState } from 'react'
-import imageProduct from '../../assets/images/blackmores-glucosamine-sulfate-1500-one-a-day-1-anhLon.jpg'
 import imageProductSmall from '../../assets/images/blackmores-glucosamine-sulfate-1500-one-a-day-1-anhLon.jpg'
 import { WrapperAddressProduct, WrapperInputNumber, WrapperPriceProduct, WrapperPriceTextProduct, WrapperQualityProduct, WrapperStyleColImageSmall, WrapperStyleImageSmall, WrapperStyleNameProduct, WrapperStyleTextSell } from './Style'
-import { StarFilled, PlusOutlined, MinusOutlined } from '@ant-design/icons'
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import * as ProductService from '../../services/ProductService'
 import { useQuery } from '@tanstack/react-query'
 import Loading from '../LoadingComponent/Loading'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { addOrderProduct } from '../../redux/slides/orderSlide'
+import { convertPrice } from '../../untils'
 
 const ProductDetailsComponent = ({ idProduct }) => {
     const [numProduct, setNumProduct] = useState(1)
-    const user = useSelector((state)=>state.user)
-    const onChange = (value) => { 
+    const user = useSelector((state) => state.user)
+    const navigate = useNavigate()
+    const location = useLocation()
+    const dispatch = useDispatch()
+    const onChange = (value) => {
         setNumProduct(Number(value))
     }
     const fetchGetDetailsProduct = async (context) => {
@@ -28,7 +33,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
         if (type === 'increase') {
             setNumProduct((prev) => prev + 1);
         } else if (type === 'decrease') {
-            if (numProduct > 1) { 
+            if (numProduct > 1) {
                 setNumProduct((prev) => prev - 1);
             }
         }
@@ -38,6 +43,34 @@ const ProductDetailsComponent = ({ idProduct }) => {
         queryFn: fetchGetDetailsProduct,
         enabled: !!idProduct
     });
+
+    const handleAddOrderProduct = () => {
+        if (!user?.id) {
+            navigate('/sign-in', { state: location?.pathname })
+        } else {
+
+            // name: { type: String, required: true },
+            // amount: { type: Number, required: true },
+            // image: { type: String, required: true },
+            // price: { type: Number, required: true },
+            // product: {
+            //     type: mongoose.Schema.Types.ObjectId,
+            //         ref: 'Product',
+            //         required: true,
+            // },
+            dispatch(addOrderProduct({
+                orderItem: {
+                    name: productDetails?.name,
+                    amount: numProduct,
+                    image: productDetails?.image,
+                    price: productDetails?.price,
+                    product: productDetails?._id,
+                    discount: productDetails?.discount,
+                    countInStock: productDetails?.countInStock,
+                }
+            }))
+        }
+    }
     console.log('productDetails', productDetails)
     return (
         <Loading isPending={isLoading}>
@@ -73,9 +106,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                         <WrapperStyleTextSell>| Đã bán 1000+</WrapperStyleTextSell>
                     </div>
                     <WrapperPriceProduct>
-                        <h1>
-                            <WrapperPriceTextProduct>{productDetails?.price}</WrapperPriceTextProduct>
-                        </h1>
+                        <WrapperPriceTextProduct>{convertPrice(productDetails?.price)}</WrapperPriceTextProduct>
                     </WrapperPriceProduct>
                     <WrapperAddressProduct>
                         <span>Giao Đến </span>
@@ -85,13 +116,13 @@ const ProductDetailsComponent = ({ idProduct }) => {
                     <div style={{ margin: '10px 0 20px', borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #ccc' }}>
                         <div style={{ marginBottom: '10px' }}>Số lượng</div>
                         <WrapperQualityProduct>
-                            <button style={{ border: 'none', background: 'transparent',cursor: 'pointer' }} onClick={() => handleChangeCount('decrease')}>
+                            <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} onClick={() => handleChangeCount('decrease')}>
                                 <MinusOutlined style={{ color: '#000', fontSize: '20px' }} />
                             </button>
 
                             <WrapperInputNumber defaultValue={3} onChange={onChange} value={numProduct} size="small" />
 
-                            <button style={{ border: 'none', background: 'transparent',cursor: 'pointer' }} onClick={() => handleChangeCount('increase')}>
+                            <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} onClick={() => handleChangeCount('increase')}>
                                 <PlusOutlined style={{ color: '#000', fontSize: '20px' }} />
                             </button>
                         </WrapperQualityProduct>
@@ -107,6 +138,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                                 border: 'none',
                                 borderRadius: '4px'
                             }}
+                            onClick={handleAddOrderProduct}
                             textButton={"Chọn Mua"}
                             styleTextButton={{ color: '#fff', fontSize: '15px', fontWeigh: '700' }}>
                         </ButtonComponent>
@@ -126,6 +158,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                     </div>
                 </Col>
             </Row>
+            
         </Loading>
     )
 }

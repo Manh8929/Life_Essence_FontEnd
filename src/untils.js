@@ -33,7 +33,7 @@ export const renderOptions = (arr) => {
     result = arr?.map((opt)=>{
       return {
         value: opt,
-        lable: opt,
+        label: opt,
       }
     })
   }
@@ -42,4 +42,13 @@ export const renderOptions = (arr) => {
     value: 'add_type'
   })
   return result
+}
+
+export const convertPrice = (price) =>{
+  try{
+    const result = price?.toLocaleString().replaceAll(',','.')
+    return `${result} VND`
+  }catch (error){
+   return null
+  }
 }

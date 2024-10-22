@@ -18,7 +18,9 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
   const [userName, setUserName] =useState('')
   const [userAvatar, setUserAvatar] =useState('')
   const [search, setSearch] = useState('')
+  const order = useSelector((state)=> state.order)
   const [loading, setLoading] = useState(false)
+  const [isOpenPopup, setIsOpenPopup] = useState(false)
   const handleNavigateLogin = () => {
     navigate('/sign-in')
   }
@@ -40,14 +42,32 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
   },[user?.name, user?.avatar])
   const content = (
     <div>
-      <WrapperContentPopup onClick={handleLogout}>Logout</WrapperContentPopup>
-      <WrapperContentPopup onClick={()=>navigate('/profile-user')}>Infomation User</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => handleClickNavigate('profile')}>Infomation User</WrapperContentPopup>
       {user?.isAdmin &&(
-        <WrapperContentPopup onClick={()=>navigate('/system/admin')}>Management system</WrapperContentPopup>
+        <WrapperContentPopup onClick={() => handleClickNavigate('admin')}>Management system</WrapperContentPopup>
       )}
+      <WrapperContentPopup onClick={() => handleClickNavigate('my-order') }>Order of me</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => handleClickNavigate()}>Logout</WrapperContentPopup>
     </div>
   );
 
+  const handleClickNavigate = (type)=>{
+    if(type === 'profile'){
+      navigate('/profile-user')
+    }else if(type ==='admin'){
+      navigate('/system/admin')
+    } else if (type === 'my-order'){
+      navigate('/my-order',{ state:{
+
+        id: user?.id,
+        token: user?.access_token
+      }
+      })
+    }else{
+      handleLogout()
+    }
+    setIsOpenPopup(false)
+  }
   const onSearch =(e)=>{
     setSearch(e.target.value)
     dispatch(searchProduct(e.target.value))
@@ -86,8 +106,8 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
             {user?.access_token ? (
               //xổ ra form
               <>
-                <Popover content={content} trigger="click">
-                <div style={{ cursor: 'pointer', fontSize: "14px" }}>{userName ?.length ? userName : user?.email}</div>
+                <Popover content={content} trigger="click" open= {isOpenPopup}>
+                    <div style={{ cursor: 'pointer', fontSize: "14px" }} onClick={() =>setIsOpenPopup((prev)=>!prev)}>{userName ?.length ? userName : user?.email}</div>
                 </Popover>
               </>
             ) : (
@@ -103,7 +123,7 @@ const HeaderComponent = ({isHiddenSearch = false ,isHiddenCart= false}) => {
         </Loading>
         {!isHiddenCart &&(
           <div onClick={()=> navigate('/order')} style={{ display: 'flex', gap: '5px', cursor: 'pointer' }}>
-            <Badge count={4} size='small'>
+            <Badge count={order?.orderItems?.length} size='small'>
               <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
             </Badge>
             <WrapperTextHeaderSmall>Cart</WrapperTextHeaderSmall>

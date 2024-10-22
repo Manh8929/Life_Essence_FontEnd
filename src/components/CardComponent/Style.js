@@ -19,6 +19,8 @@ export const WrapperCardStyle = styled(Card)`
     }
     position: relative;
     display: flex;
+    background-color: ${props => props.disabled ? '#ccc': '#fff'};
+    cursor: ${props => props.disabled ? 'not-allowed': 'pointer'};
 
     
 `
